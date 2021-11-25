@@ -42,48 +42,47 @@ public class PembayaranGojek implements ActionListener{
     private int totalharga;
     
     public PembayaranGojek(){
-        framepembayarangojek.setSize(900,800);
+        framepembayarangojek.setSize(900,600);
         framepembayarangojek.setLocationRelativeTo(null);
         framepembayarangojek.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         //Label
-        labeljudul = new JLabel("PEMBAYARAN");
+        labeljudul = new JLabel("PEMBAYARAN OJEK");
         labeljudul.setBounds(300,20,300,50);
         labeljudul.setFont(new Font(labeljudul.getFont().getName(), labeljudul.getFont().getStyle(), 28));
         
         labelnamapemesan = new JLabel("Nama Pemesan: ");
-        labelnamapemesan.setBounds(20,80,100,50);
-                
+        labelnamapemesan.setBounds(20,80,100,50);             
         
         labelalamatjemput = new JLabel("Alamat Penjemputan: ");
-        labelalamatjemput.setBounds(20,160,150,50);
+        labelalamatjemput.setBounds(20,100,150,50);
                 
         labelalamattujuan= new JLabel("Alamat Tujuan: ");        
-        labelalamattujuan.setBounds(20,200,100,50);
+        labelalamattujuan.setBounds(20,150,100,50);
         
         labeljarak = new JLabel("Jarak : ");
-        labeljarak.setBounds(20,240,100,50);
+        labeljarak.setBounds(20,200,100,50);
         
         labeltotalharga = new JLabel("Total Harga: ");
-        labeltotalharga.setBounds(20,280,100,50);
+        labeltotalharga.setBounds(20,250,100,50);
         
         labelmetodepembayaran = new JLabel("Pilih Metode Pembayarannya: ");
-        labelmetodepembayaran.setBounds(20,320,170,50);
+        labelmetodepembayaran.setBounds(20,300,170,50);
 
         
         labelisinamapemesan = new JLabel(PesananManager.getInstance().getPesanan().getCustomer().getNama());
         labelisinamapemesan.setBounds(230,80,300,50);
         
         labelisialamatjemput = new JLabel(PesananManager.getInstance().getPesanan().getTitikawal());
-        labelisialamatjemput.setBounds(230,160,300,50);
+        labelisialamatjemput.setBounds(230,100,300,50);
         
         labelisialamattujuan = new JLabel(PesananManager.getInstance().getPesanan().getTitikakhir());
-        labelisialamattujuan.setBounds(230,200,300,50);
+        labelisialamattujuan.setBounds(230,150,300,50);
         
         Random angkarandom = new Random();
         jarak = angkarandom.nextInt(10) + 1;
         labelisijarak = new JLabel(jarak + "KM");
-        labelisijarak.setBounds(230,240,300,50);
+        labelisijarak.setBounds(230,200,300,50);
         
         int harga = 0;
         if(PesananOjekManager.getInstance().getPesananojek().getJeniskendaraan().equals("Motor")){
@@ -93,26 +92,26 @@ public class PembayaranGojek implements ActionListener{
         }
         totalharga = harga * jarak;
         labelisitotalharga = new JLabel(Integer.toString(totalharga));
-        labelisitotalharga.setBounds(230,280,300,50);
+        labelisitotalharga.setBounds(230,250,300,50);
         
         
         //Combo Box
         String metodepembayaran[] = {"OVO","Tunai"};
         cBmetodepembayaran = new JComboBox(metodepembayaran);
-        cBmetodepembayaran.setBounds(230,320,170,50);
+        cBmetodepembayaran.setBounds(230,300,170,50);
         
 
         //Button
         buttonSubmit = new JButton("Submit");
-        buttonSubmit.setBounds(100,500,100,50);
+        buttonSubmit.setBounds(100,400,100,50);
         buttonSubmit.addActionListener(this);
         
         buttonBack = new JButton("Back");
-        buttonBack.setBounds(300,500,100,50);
+        buttonBack.setBounds(300,400,100,50);
         buttonBack.addActionListener(this);
         
         buttonCancel = new JButton("Cancel");
-        buttonCancel.setBounds(500,500,200,50);
+        buttonCancel.setBounds(500,400,100,50);
         buttonCancel.addActionListener(this);
         
         framepembayarangojek.add(labeljudul);

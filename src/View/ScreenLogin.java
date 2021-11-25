@@ -46,7 +46,7 @@ public class ScreenLogin  extends JFrame implements ActionListener{
         labeljudul = new JLabel("Silahkan Insert Data Dibawah ");
         labeljudul.setBounds(100, 10, 200, 30);
         
-        labelusername = new JLabel("Name");
+        labelusername = new JLabel("UserName");
         labelusername.setBounds(45, 50, 100, 30);
         
         fieldusername = new JTextField();

@@ -45,21 +45,19 @@ public class PembayaranFoodScreen implements ActionListener{
     private int totalharga, totalHargaPesanan;
     private ArrayList<DetailPesanan> listDetailPesanan2 = new ArrayList<>();
     public PembayaranFoodScreen(ArrayList<DetailPesanan> listDetailPesanan){
-        listDetailPesanan2 = listDetailPesanan;
-        
-        framepembayarangojek.setSize(900,800);
+        listDetailPesanan2 = listDetailPesanan;        
+        framepembayarangojek.setSize(900,700);
         framepembayarangojek.setLocationRelativeTo(null);
         framepembayarangojek.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         //Label
-        labeljudul = new JLabel("PEMBAYARAN");
+        labeljudul = new JLabel("PEMBAYARAN FOOD");
         labeljudul.setBounds(300,20,300,50);
         labeljudul.setFont(new Font(labeljudul.getFont().getName(), labeljudul.getFont().getStyle(), 28));
         
         labelnamapemesan = new JLabel("Nama Pemesan: ");
         labelnamapemesan.setBounds(20,80,100,50);
                 
-        
         labelalamatjemput = new JLabel("Alamat Penjemputan: ");
         labelalamatjemput.setBounds(20,120,150,50);
                 
@@ -104,15 +102,15 @@ public class PembayaranFoodScreen implements ActionListener{
         labelisinamapemesan.setBounds(230,80,300,50);
         
         labelisialamatjemput = new JLabel(PesananManager.getInstance().getPesanan().getTitikawal());
-        labelisialamatjemput.setBounds(230,160,300,50);
+        labelisialamatjemput.setBounds(230,120,300,50);
         
         labelisialamattujuan = new JLabel(PesananManager.getInstance().getPesanan().getTitikakhir());
-        labelisialamattujuan.setBounds(230,200,300,50);
+        labelisialamattujuan.setBounds(230,160,300,50);
         
         Random angkarandom = new Random();
         jarak = angkarandom.nextInt(10) + 1;
         labelisijarak = new JLabel(jarak + "KM");
-        labelisijarak.setBounds(230,240,300,50);
+        labelisijarak.setBounds(230,200,300,50);
         
         int harga = 3500;
         
@@ -130,15 +128,15 @@ public class PembayaranFoodScreen implements ActionListener{
 
         //Button
         buttonSubmit = new JButton("Submit");
-        buttonSubmit.setBounds(100,700,100,50);
+        buttonSubmit.setBounds(100,500,100,50);
         buttonSubmit.addActionListener(this);
         
         buttonBack = new JButton("Back");
-        buttonBack.setBounds(300,700,100,50);
+        buttonBack.setBounds(300,500,100,50);
         buttonBack.addActionListener(this);
         
         buttonCancel = new JButton("Cancel");
-        buttonCancel.setBounds(500,700,200,50);
+        buttonCancel.setBounds(500,500,200,50);
         buttonCancel.addActionListener(this);
         
         for(int i = 0; i < listDetailPesanan.size(); i++){

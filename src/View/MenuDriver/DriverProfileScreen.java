@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -80,7 +81,7 @@ public class DriverProfileScreen extends JFrame implements ActionListener{
         backbutton.setBounds(180,350,100,30);
         
         lihatriwayatbutton = new JButton("LihatRiwayat");
-        backbutton.addActionListener(this);
+        lihatriwayatbutton.addActionListener(this);
         lihatriwayatbutton.setBounds(70,400,200,30);
       
         frame.add(labeljudul);
@@ -109,7 +110,23 @@ public class DriverProfileScreen extends JFrame implements ActionListener{
         String command = ae.getActionCommand();
         switch(command){
             case"TarikSaldo":
-                DriverManager.getInstance().getDrivers().getSaldoOvo();
+                int jawab = JOptionPane.showConfirmDialog(null, "Yakin ingin menarik Rp. " + fieldnominal.getText() + ",-?");
+                switch(jawab){
+                    case JOptionPane.YES_OPTION:
+                        if(Integer.parseInt(fieldnominal.getText()) < DriverManager.getInstance().getDrivers().getSaldoOvo()){
+                            DriverManager.getInstance().getDrivers().setSaldoOvo(DriverManager.getInstance().getDrivers().getSaldoOvo() - Integer.parseInt(fieldnominal.getText()));
+                            JOptionPane.showMessageDialog(null, "Penarikan Berhasil!!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Saldo Ovo Kurang!!", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        break;
+                    case JOptionPane.CANCEL_OPTION:
+                        break;
+                }
+                
                 frame.setVisible(false);
                 new DriverScreen();
             break;

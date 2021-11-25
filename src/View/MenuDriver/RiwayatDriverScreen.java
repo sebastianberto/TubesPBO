@@ -5,6 +5,7 @@
  */
 package View.MenuDriver;
 import Controller.DatabaseControl;
+import Controller.DriverManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -30,24 +31,37 @@ public class RiwayatDriverScreen extends JFrame implements ActionListener{
         framedata.setLocationRelativeTo(null);
         framedata.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         DatabaseControl ctrl = new DatabaseControl();
-        //ArrayList<Pesanan> listuser = new ArrayList<>();
-        //listuser = ctrl.getUserBasedCatgory(id_pesanan);
-        //int baris = listuser.size();
-        //int kolom = 3;
-        //String data[][] = new String[baris][kolom];
+        ArrayList<Pesanan> listPesanan = new ArrayList<>();
+        ArrayList<Pesanan> listPesananDriver = new ArrayList<>();
+        listPesanan = ctrl.getAllPesanan();
         
-        //for(int i = 0 ; i < listuser.size(); i++){
-         //   data[i][0] = Integer.toString(listuser.get(i).getId());
-        //    data[i][1] = listuser.get(i).getName();
-        //    data[i][2] = listuser.get(i).getEmail();
-       // }
-        String tabelkolom[] = {"ID","NamaPemesan","Alamat jemput","Alamat antar","Jarak","Metode Bayar","Total Harga"};
-       // tabeldata = new JTable(data,tabelkolom);
-        //tabeldata.setBounds(150,200,400,300);
+        for(int i = 0; i < listPesanan.size(); i++){
+            if(listPesanan.get(i).getDriver().getId_driver() == DriverManager.getInstance().getDrivers().getId_driver()){
+                listPesananDriver.add(listPesanan.get(i));
+            }
+        }
+        
+        int baris = listPesananDriver.size();
+        int kolom = 8;
+        String data[][] = new String[baris][kolom];
+        
+        for(int i = 0 ; i < listPesananDriver.size(); i++){
+            data[i][0] = Integer.toString(listPesananDriver.get(i).getId_pesanan());
+            data[i][1] = listPesananDriver.get(i).getCustomer().getNama();
+            data[i][2] = listPesananDriver.get(i).getTitikawal();
+            data[i][3] = listPesananDriver.get(i).getTitikakhir();
+            data[i][4] = Integer.toString(listPesananDriver.get(i).getJarak());
+            data[i][5] = listPesananDriver.get(i).getMetodepembayaran();
+            data[i][6] = listPesananDriver.get(i).getTanggalpemesanan();
+            data[i][7] = Integer.toString(listPesananDriver.get(i).getTotalharga());
+        }
+        String tabelkolom[] = {"ID","NamaPemesan","Alamat jemput","Alamat antar","Jarak","Metode Bayar", "Tanggal Pemesanan", "Total Harga"};
+        tabeldata = new JTable(data,tabelkolom);
+        tabeldata.setBounds(150,200,400,300);
         
         sp = new JScrollPane(tabeldata);
         
-          framedata.add(sp);
+        framedata.add(sp);
         //framedata.add(backbutton);
         framedata.setVisible(true);
     }

@@ -488,6 +488,32 @@ public class DatabaseControl {
         }
         return listUser;
     }
+    public static Pesanan getPesananTerbaru(){
+        conn.connect();
+        Pesanan pesanan = new Pesanan();
+        String query = "SELECT * FROM pesanan ORDER BY id DESC LIMIT 1";
+        try{
+            Statement stmt = conn.con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            
+            DatabaseControl ctrl = new DatabaseControl();
+            
+            while(rs.next()){
+                pesanan.setId_pesanan(rs.getInt("id"));
+                pesanan.setCustomer(ctrl.getCustomerByIdCustomer(rs.getInt("idCustomer")));
+                pesanan.setDriver(ctrl.getDriverByIdDriver(rs.getInt("idDriver")));
+                pesanan.setTanggalpemesanan(rs.getString("tanggalpemesanan"));
+                pesanan.setMetodepembayaran(rs.getString("metodepembayaran"));
+                pesanan.setTitikawal(rs.getString("titikawal"));
+                pesanan.setTitikakhir(rs.getString("titikakhir"));
+                pesanan.setTotalharga(rs.getInt("totalharga"));
+                pesanan.setJarak(rs.getInt("jarak"));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return pesanan;
+    }
     public static boolean insertNewPesanan(Pesanan pesanan){
         conn.connect();
         String query = "INSERT INTO pesanan (id,idCustomer,idDriver,titikawal,titikakhir,tanggalpemesanan,metodepembayaran,totalharga,jarak) values (?,?,?,?,?,?,?,?,?)";
@@ -495,7 +521,7 @@ public class DatabaseControl {
             PreparedStatement stmt = conn.con.prepareStatement(query);
             stmt.setInt(1, 0);
             stmt.setInt(2, pesanan.getCustomer().getId_customer());
-            stmt.setInt(3, 0);
+            stmt.setInt(3, pesanan.getDriver().getId_driver());
             stmt.setString(4, pesanan.getTitikawal());
             stmt.setString(5, pesanan.getTitikakhir());
             stmt.setString(6, pesanan.getTanggalpemesanan());
@@ -561,5 +587,65 @@ public class DatabaseControl {
             }
         }
         return true;
+    }
+    public static boolean updateCustomer(Customers customer) {
+        conn.connect();
+        String query = "UPDATE customers SET saldo=" + customer.getSaldoovo() + " WHERE id_Customers=" + customer.getId_customer();
+        try {
+            Statement stmt = conn.con.createStatement();
+            stmt.executeUpdate(query);
+            return (true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return (false);
+        }
+    }
+    public static boolean updateDriver(Driver driver) {
+        conn.connect();
+        String query = "UPDATE driver SET saldoOvo=" + driver.getSaldoOvo() + " WHERE id_Driver=" + driver.getId_driver();
+        try {
+            Statement stmt = conn.con.createStatement();
+            stmt.executeUpdate(query);
+            return (true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return (false);
+        }
+    }
+    public static boolean updateStatusDriver(String status, int idDriver){
+        conn.connect();
+        String query = "UPDATE driver SET status = '" + status + "' WHERE id_Driver = " + idDriver;
+        try{
+            Statement stmt = conn.con.createStatement();
+            stmt.executeUpdate(query);
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean updateStatusPesananFood(int status, int idPesananFood){
+        conn.connect();
+        String query = "UPDATE pesananfood SET StatusPesanan = '" + status + "' WHERE id_PesananFood = " + idPesananFood;
+        try{
+            Statement stmt = conn.con.createStatement();
+            stmt.executeUpdate(query);
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean updateStatusPesananOjek(int status, int idPesananOjek){
+        conn.connect();
+        String query = "UPDATE pesananojek SET StatusPesanan = '" + status + "' WHERE id_PesananOjek = " + idPesananOjek;
+        try{
+            Statement stmt = conn.con.createStatement();
+            stmt.executeUpdate(query);
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }

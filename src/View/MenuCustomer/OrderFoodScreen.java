@@ -74,7 +74,7 @@ public class OrderFoodScreen implements ActionListener{
                 }
                 labelMakanan[counter].setBounds(x1, y, 100, 30);
                 tfMakanan[counter].setBounds(x2, y, 50, 30);
-                y += 60; 
+                
                 counter++;
             }
         }
@@ -105,14 +105,13 @@ public class OrderFoodScreen implements ActionListener{
         switch(command){
             case"Next":
                 ArrayList<DetailPesanan> listDetailPesanan = new ArrayList<>();
-                
+                DetailPesanan detailPesanan = new DetailPesanan();
                 
                 boolean cek = false;
                 
                 for(int i = 0; i < listFoodRestaurant.size(); i++){
                     if(!tfMakanan[i].getText().equals("")){
                         cek = true;
-                        DetailPesanan detailPesanan = new DetailPesanan();
                         detailPesanan.setId_makanan(listFoodRestaurant.get(i).getIdmakanan());
                         detailPesanan.setNamaMenu(listFoodRestaurant.get(i).getNamamakanan());
                         detailPesanan.setHargaSatuan(listFoodRestaurant.get(i).getHargamakanan());

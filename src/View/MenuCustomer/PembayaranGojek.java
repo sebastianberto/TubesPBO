@@ -5,19 +5,25 @@
  */
 package View.MenuCustomer;
 
+import Controller.CustomerManager;
+import View.MenuCustomer.MenuGojek;
 import Controller.DatabaseControl;
 import Controller.PesananManager;
 import Controller.PesananOjekManager;
+import Model.Driver;
+import View.MenuCustomer.CustomerScreen;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -29,9 +35,8 @@ public class PembayaranGojek implements ActionListener{
     private JFrame framepembayarangojek = new JFrame();
     private JLabel labelnamapemesan, labelalamatjemput, labelalamattujuan,labeljarak, labeltotalharga,
             labelisinamapemesan, labelisialamatjemput, labelisialamattujuan, labelisijarak, labelisitotalharga,
-            labelmetodepembayaran , labelnominal,labeljudul;
+            labelmetodepembayaran ,labeljudul;
     private JComboBox cBmetodepembayaran;
-    private JTextField fieldnominal;
     private JButton buttonBack, buttonSubmit, buttonCancel;
     private int jarak;  
     private int totalharga;
@@ -64,9 +69,7 @@ public class PembayaranGojek implements ActionListener{
         
         labelmetodepembayaran = new JLabel("Pilih Metode Pembayarannya: ");
         labelmetodepembayaran.setBounds(20,320,170,50);
-        
-        labelnominal = new JLabel("Nominal: ");
-        labelnominal.setBounds(20,380,100,50);
+
         
         labelisinamapemesan = new JLabel(PesananManager.getInstance().getPesanan().getCustomer().getNama());
         labelisinamapemesan.setBounds(230,80,300,50);
@@ -92,24 +95,12 @@ public class PembayaranGojek implements ActionListener{
         labelisitotalharga = new JLabel(Integer.toString(totalharga));
         labelisitotalharga.setBounds(230,280,300,50);
         
-        //Text Field
-        fieldnominal = new JTextField("ISI NOMINAL DISIN");
-        fieldnominal.setBounds(230,380,300,50);
-        
         
         //Combo Box
         String metodepembayaran[] = {"OVO","Tunai"};
         cBmetodepembayaran = new JComboBox(metodepembayaran);
         cBmetodepembayaran.setBounds(230,320,170,50);
-        cBmetodepembayaran.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if(cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()).equals("OVO")){
-                    framepembayarangojek.add(fieldnominal);
-                }else{
-                    framepembayarangojek.remove(fieldnominal);
-                }
-            }
-        });
+        
 
         //Button
         buttonSubmit = new JButton("Submit");
@@ -131,13 +122,11 @@ public class PembayaranGojek implements ActionListener{
         framepembayarangojek.add(labeljarak);
         framepembayarangojek.add(labeltotalharga);
         framepembayarangojek.add(labelmetodepembayaran);
-        framepembayarangojek.add(labelnominal);
         framepembayarangojek.add(labelisinamapemesan);
         framepembayarangojek.add(labelisialamatjemput);
         framepembayarangojek.add(labelisialamattujuan);
         framepembayarangojek.add(labelisijarak);
         framepembayarangojek.add(labelisitotalharga);
-        framepembayarangojek.add(fieldnominal);
         framepembayarangojek.add(cBmetodepembayaran);
         framepembayarangojek.add(buttonBack);
         framepembayarangojek.add(buttonSubmit);
@@ -151,18 +140,55 @@ public class PembayaranGojek implements ActionListener{
         String command = ae.getActionCommand();
         switch(command){
             case "Submit":
-                PesananManager.getInstance().getPesanan().setMetodepembayaran((String) cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()));
-                PesananManager.getInstance().getPesanan().setJarak(jarak);
-                PesananManager.getInstance().getPesanan().setTotalharga(totalharga);
-                Date date = new Date();
-                SimpleDateFormat s = new SimpleDateFormat("dd-mm-yyyy");
-                String tanggal = s.format(date);
-                PesananManager.getInstance().getPesanan().setTanggalpemesanan(tanggal);
-                DatabaseControl ctrl = new DatabaseControl();
-                ctrl.insertNewPesanan(PesananManager.getInstance().getPesanan());
-                ctrl.insertNewPesananOjek(PesananOjekManager.getInstance().getPesananojek());
+                if((cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()).equals("Tunai")) || (CustomerManager.getInstance().getCustomer().getSaldoovo() >= totalharga)){
+                    PesananManager.getInstance().getPesanan().setMetodepembayaran((String) cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()));
+                    PesananManager.getInstance().getPesanan().setJarak(jarak);
+                    PesananManager.getInstance().getPesanan().setTotalharga(totalharga);
+                    Date date = new Date();
+                    SimpleDateFormat s = new SimpleDateFormat("dd-mm-yyyy");
+                    String tanggal = s.format(date);
+                    PesananManager.getInstance().getPesanan().setTanggalpemesanan(tanggal);
+                    DatabaseControl ctrl = new DatabaseControl();
+                
+                    ArrayList<Driver> listDriver = new ArrayList<>();
+                    Driver driver = new Driver();
+                    listDriver = ctrl.getAllDriver();
+                    boolean cek = false;
+                
+                    for(int i = 0; i < listDriver.size(); i++){
+                        if(listDriver.get(i).getStatus().equals("Tidak ada orderan") && listDriver.get(i).getJeniskendaraan().equals(PesananOjekManager.getInstance().getPesananojek().getJeniskendaraan())){
+                            cek = true;
+                            driver = listDriver.get(i);
+                            driver.setStatus("Ada orderan");
+                            break;
+                        }
+                    }
+                    if(cek){
+                        if(cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()).equals("OVO")){
+                            CustomerManager.getInstance().getCustomer().setSaldoovo(CustomerManager.getInstance().getCustomer().getSaldoovo() - totalharga);
+                        }
+                        
+                        ctrl.updateStatusDriver("Ada orderan", driver.getId_driver());
+                        
+                        PesananManager.getInstance().getPesanan().setDriver(driver);
+                
+                        ctrl.insertNewPesanan(PesananManager.getInstance().getPesanan());
+                
+                        PesananOjekManager.getInstance().getPesananojek().setId_pesanan(ctrl.getPesananTerbaru().getId_pesanan());
+                
+                        ctrl.insertNewPesananOjek(PesananOjekManager.getInstance().getPesananojek());
+                
+                        JOptionPane.showMessageDialog(null, "Pemesanan Berhasil!!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Pemesanan Gagal!! Tidak Ada Driver Yang Siap", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    
+                }else{
+                    JOptionPane.showMessageDialog(null, "Saldo Ovo Tidak Cukup!!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 framepembayarangojek.setVisible(false);
                 new CustomerScreen();
+                
             break;
             case "Back":
                 framepembayarangojek.setVisible(false);

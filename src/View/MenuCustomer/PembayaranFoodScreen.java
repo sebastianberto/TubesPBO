@@ -5,11 +5,13 @@
  */
 package View.MenuCustomer;
 
+import Controller.CustomerManager;
 import Controller.DatabaseControl;
 import Controller.PesananFoodManager;
 import Controller.PesananManager;
 import Controller.PesananOjekManager;
 import Model.DetailPesanan;
+import Model.Driver;
 import Model.Pesanan;
 import Model.PesananFood;
 import java.awt.Font;
@@ -23,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -34,10 +37,9 @@ public class PembayaranFoodScreen implements ActionListener{
     private JFrame framepembayarangojek = new JFrame();
     private JLabel labelnamapemesan, labelalamatjemput, labelalamattujuan,labeljarak, labeltotalharga,
             labelisinamapemesan, labelisialamatjemput, labelisialamattujuan, labelisijarak, labelisitotalharga,
-            labelmetodepembayaran , labelnominal,labeljudul, labelPesanan, labelTotalHargaMakanan, labelIsiTotalHargaMakanan;
+            labelmetodepembayaran , labeljudul, labelPesanan, labelTotalHargaMakanan, labelIsiTotalHargaMakanan;
     private JLabel[] labelIsiPesanan, labelQuantity;
     private JComboBox cBmetodepembayaran;
-    private JTextField fieldnominal;
     private JButton buttonBack, buttonSubmit, buttonCancel;
     private int jarak;  
     private int totalharga, totalHargaPesanan;
@@ -98,9 +100,6 @@ public class PembayaranFoodScreen implements ActionListener{
         labelmetodepembayaran = new JLabel("Pilih Metode Pembayarannya: ");
         labelmetodepembayaran.setBounds(20,y+80,170,50);
         
-        labelnominal = new JLabel("Nominal: ");
-        labelnominal.setBounds(20,y+150,100,50);
-        
         labelisinamapemesan = new JLabel(PesananManager.getInstance().getPesanan().getCustomer().getNama());
         labelisinamapemesan.setBounds(230,80,300,50);
         
@@ -123,24 +122,11 @@ public class PembayaranFoodScreen implements ActionListener{
         
         labelIsiTotalHargaMakanan = new JLabel(Integer.toString(totalHargaPesanan));
         labelIsiTotalHargaMakanan.setBounds(230, y2, 300, 50);
-        //Text Field
-        fieldnominal = new JTextField("ISI NOMINAL DISINI");
-        fieldnominal.setBounds(230,y2+150,300,50);
-        
         
         //Combo Box
         String metodepembayaran[] = {"OVO","Tunai"};
         cBmetodepembayaran = new JComboBox(metodepembayaran);
         cBmetodepembayaran.setBounds(230,y2+80,170,50);
-        cBmetodepembayaran.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if(cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()).equals("OVO")){
-                    framepembayarangojek.add(fieldnominal);
-                }else{
-                    framepembayarangojek.remove(fieldnominal);
-                }
-            }
-        });
 
         //Button
         buttonSubmit = new JButton("Submit");
@@ -169,13 +155,11 @@ public class PembayaranFoodScreen implements ActionListener{
         framepembayarangojek.add(labeljarak);
         framepembayarangojek.add(labeltotalharga);
         framepembayarangojek.add(labelmetodepembayaran);
-        framepembayarangojek.add(labelnominal);
         framepembayarangojek.add(labelisinamapemesan);
         framepembayarangojek.add(labelisialamatjemput);
         framepembayarangojek.add(labelisialamattujuan);
         framepembayarangojek.add(labelisijarak);
         framepembayarangojek.add(labelisitotalharga);
-        framepembayarangojek.add(fieldnominal);
         framepembayarangojek.add(cBmetodepembayaran);
         framepembayarangojek.add(buttonBack);
         framepembayarangojek.add(buttonSubmit);
@@ -189,37 +173,70 @@ public class PembayaranFoodScreen implements ActionListener{
         String command = ae.getActionCommand();
         switch(command){
             case "Submit":
-                PesananManager.getInstance().getPesanan().setMetodepembayaran((String) cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()));
-                PesananManager.getInstance().getPesanan().setJarak(jarak);
-                PesananManager.getInstance().getPesanan().setTotalharga(totalharga);
-                Date date = new Date();
-                SimpleDateFormat s = new SimpleDateFormat("dd-mm-yyyy");
-                String tanggal = s.format(date);
-                PesananManager.getInstance().getPesanan().setTanggalpemesanan(tanggal);
-                DatabaseControl ctrl = new DatabaseControl();
-                ctrl.insertNewPesanan(PesananManager.getInstance().getPesanan());
+                if((cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()).equals("Tunai")) || (CustomerManager.getInstance().getCustomer().getSaldoovo() >= totalharga)){
+                    PesananManager.getInstance().getPesanan().setMetodepembayaran((String) cBmetodepembayaran.getItemAt(cBmetodepembayaran.getSelectedIndex()));
+                    PesananManager.getInstance().getPesanan().setJarak(jarak);
+                    PesananManager.getInstance().getPesanan().setTotalharga(totalharga);
+                    Date date = new Date();
+                    SimpleDateFormat s = new SimpleDateFormat("dd-mm-yyyy");
+                    String tanggal = s.format(date);
+                    PesananManager.getInstance().getPesanan().setTanggalpemesanan(tanggal);
+                    DatabaseControl ctrl = new DatabaseControl();
                 
-                ArrayList<PesananFood> listPesananFood = new ArrayList<>();
-                listPesananFood = ctrl.getAllPesananFood();
-                int idPesananFood = listPesananFood.get(listPesananFood.size()-1).getID_PesananFood();
+                    ArrayList<PesananFood> listPesananFood = new ArrayList<>();
+                    listPesananFood = ctrl.getAllPesananFood();
+                    
                 
-                ArrayList<Pesanan> listPesanan = new ArrayList<>();
-                int idPesanan = listPesanan.get(listPesanan.size()-1).getId_pesanan();
+                    ArrayList<Pesanan> listPesanan = new ArrayList<>();
+                    listPesanan = ctrl.getAllPesanan();
+                    
                 
-                PesananFood pesananFood = new PesananFood();
-                pesananFood.setID_PesananFood(idPesananFood);
-                pesananFood.setId_pesanan(idPesanan);
-                pesananFood.setTotalHargaFood(totalHargaPesanan);
-                pesananFood.setStatusfood(2);
+                    PesananFood pesananFood = new PesananFood();
+                    pesananFood.setTotalHargaFood(totalHargaPesanan);
+                    pesananFood.setStatusfood(2);
                 
-                ctrl.insertNewPesanan(PesananManager.getInstance().getPesanan());
-                ctrl.insertNewPesananFood(pesananFood);
-                ctrl.insertNewDetailFood(listDetailPesanan2, pesananFood);
+                    PesananFoodManager.getInstance().setPesananfood(pesananFood);
+                    ArrayList<Driver> listDriver = new ArrayList<>();
+                    Driver driver = new Driver();
+                    listDriver = ctrl.getAllDriver();
                 
+                    boolean cek = false;
+                    for(int i = 0; i < listDriver.size(); i++){
+                        if(listDriver.get(i).getStatus().equals("Tidak ada orderan")){
+                            cek = true;
+                            driver = listDriver.get(i);
+                            driver.setStatus("Ada orderan");
+                            break;
+                        }
+                    }
+                
+                    if(cek){
+                        CustomerManager.getInstance().getCustomer().setSaldoovo(CustomerManager.getInstance().getCustomer().getSaldoovo() - totalharga);
+                        
+                        ctrl.updateStatusDriver("Ada orderan", driver.getId_driver());
+                        
+                        PesananManager.getInstance().getPesanan().setDriver(driver);
+                
+                        ctrl.insertNewPesanan(PesananManager.getInstance().getPesanan());
+                        
+                        PesananFoodManager.getInstance().getPesananfood().setId_pesanan(ctrl.getPesananTerbaru().getId_pesanan());
+                        ctrl.insertNewPesananFood(pesananFood);
+                
+                        ctrl.insertNewDetailFood(listDetailPesanan2, pesananFood);
+                
+                       JOptionPane.showMessageDialog(null, "Pemesanan Berhasil!!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Pemesanan Gagal!! Tidak ada Driver yang kosong", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Saldo Ovo Tidak Cukup!!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                framepembayarangojek.setVisible(false);
+                new CustomerScreen();
             break;
             case "Back":
                 framepembayarangojek.setVisible(false);
-                new MenuGojek();
+                new MenuGoFood();
             break;
             case "Cancel":
                 framepembayarangojek.setVisible(false);

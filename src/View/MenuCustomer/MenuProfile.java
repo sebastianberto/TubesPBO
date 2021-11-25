@@ -5,8 +5,10 @@
  */
 package View.MenuCustomer;
 
+import View.MenuCustomer.CustomerScreen;
 import View.MenuDriver.DriverScreen;
 import Controller.CustomerManager;
+import Controller.DatabaseControl;
 import Controller.UserManager;
 import Model.Customers;
 import Model.Driver;
@@ -63,6 +65,9 @@ public class MenuProfile {
                 int jawab = JOptionPane.showConfirmDialog(null, "Yakin ingin Logout?");
                 switch(jawab){
                     case JOptionPane.YES_OPTION:
+                        DatabaseControl ctrl = new DatabaseControl();
+                        ctrl.updateCustomer(CustomerManager.getInstance().getCustomer());
+                        
                         JOptionPane.showMessageDialog(null, "Terima kasih terlah menggunakan aplikasi ini!");
                         frame.setVisible(false);
                         UserManager.getInstance().setUser(null);
